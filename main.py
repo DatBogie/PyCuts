@@ -1,17 +1,24 @@
-import os, sys, pynput
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
+import os, sys, json
+from pynput import keyboard
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        central = QWidget()
-        self.setCentralWidget(central)
-        
-        main_lay = QVBoxLayout()
-        central.setLayout(main_lay)
+modifiers = {
+    "cmd":False,
+    "alt":False,
+    "ctrl":False
+}
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    win = MainWindow()
-    win.show()
-    sys.exit(app.exec())
+def on_press(key):
+    try:
+        modifiers[key.name] = True
+    except:pass
+
+def on_release(key):
+    try:
+        modifiers[key.name] = False
+    except:pass
+
+# Set up the keyboard listener
+keyboard_listener = keyboard.Listener(
+    on_press=on_press,
+    on_release=on_release)
+keyboard_listener.start()
