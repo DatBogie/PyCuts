@@ -1,3 +1,4 @@
+import sys
 from PyQt6.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt6.QtCore import Qt, QEvent
 from PyQt6.QtGui import QKeyEvent
@@ -36,8 +37,13 @@ class KeyboardDialog(QDialog):
 
         btn_lay = QHBoxLayout()
         btn_lay.addStretch()
-        btn_lay.addWidget(cancel)
-        btn_lay.addWidget(ok)
+        
+        if sys.platform == "darwin":
+            btn_lay.addWidget(cancel)
+            btn_lay.addWidget(ok)
+        else:
+            btn_lay.addWidget(ok)
+            btn_lay.addWidget(cancel)
 
         main_lay.addLayout(btn_lay)
 

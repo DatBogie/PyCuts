@@ -1,10 +1,10 @@
 import sys, os, json
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QInputDialog, QTableWidget, QTableWidgetItem
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QInputDialog, QTableWidget, QTableWidgetItem, QMessageBox
 from PyQt6.QtCore import QTimer
 from KeyboardDialog import KeyboardDialog, getTextFromQKeyEvent
 
 def get_config_dir():
-    return os.path.join(os.path.expanduser("~"),".config","pycuts") if sys.platform != "win32" else os.path.join(os.expanduser("~"),"AppData","Local","PyCuts")
+    return os.path.join(os.path.expanduser("~"),".config","pycuts") if sys.platform != "win32" else os.path.join(os.path.expanduser("~"),"AppData","Local","PyCuts")
 
 def mk_config_dir():
     p = get_config_dir()
@@ -39,30 +39,41 @@ class MainWindow(QMainWindow):
         main_lay.addLayout(btn_lay)
         
         new = QPushButton("New")
+        edit = QPushButton("Edit Shortcut")
         delete = QPushButton("Delete")
         
         new.clicked.connect(self.new)
+        edit.clicked.connect(self.edit_current_shortcut)
         delete.clicked.connect(self.del_row)
         
         btn_lay.addWidget(new)
+        btn_lay.addWidget(edit)
         btn_lay.addWidget(delete)
         
         main_lay.addWidget(self.ls)
     def new(self):
         t, s = QInputDialog.getText(self,"PyCuts - New Shortcut","Enter shortcut's name:")
         if not s: return
-        c, s = QInputDialog.getText(self,"PyCuts - New Shortcut","Enter command:")
+        c, s = QInputDialog.getText(self,"PyCuts - New Shortcut",f"Shortcut '{t}'\nEnter command:")
         if not s: return
-        k, s = KeyboardDialog.getShortcut(self, "PyCuts - New Shortcut","Press shortcut key:")
+        k, s = KeyboardDialog.getShortcut(self, "PyCuts - New Shortcut",f"Shortcut '{t}'\nPress shortcut key(s):")
         if not s or not k: return   
         self.ls.setRowCount(self.ls.rowCount()+1)
         self.ls.setItem(self.ls.rowCount()-1,0,QTableWidgetItem(t))
         self.ls.setItem(self.ls.rowCount()-1,1,QTableWidgetItem(c))
         # self.ls.setItem(self.ls.rowCount()-1,2,QTableWidgetItem(getTextFromQKeyEvent(k)))
         self.ls.setItem(self.ls.rowCount()-1,2,QTableWidgetItem(" + ".join([getTextFromQKeyEvent(x) for x in k.values()])))
-        QTimer.singleShot(200,self.save_data)
+        QTimer.singleShot(1000,self.save_data)
+    def edit_current_shortcut(self):
+        row = self.ls.currentRow()
+        k, s = KeyboardDialog.getShortcut(self, "PyCuts - Edit Shortcut",f"Shortcut '{self.ls.item(row,0).text()}'\nPress shortcut key(s):")
+        if not s or not k: return
+        self.ls.setItem(row,2,QTableWidgetItem(" + ".join([getTextFromQKeyEvent(x) for x in k.values()])))
     def del_row(self):
-        self.ls.removeRow(self.ls.currentRow())
+        btn = QMessageBox.warning(self,"PyCuts = Remove Shortcut",f"Are you sure you want to delete '{self.ls.item(self.ls.currentRow(),0).text()}'?",QMessageBox.StandardButton.Yes,QMessageBox.StandardButton.No)
+        if btn == QMessageBox.StandardButton.Yes:
+            self.ls.removeRow(self.ls.currentRow())
+        
     def save_data(self):
         data = []
         for row in range(self.ls.rowCount()-1):
