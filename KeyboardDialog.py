@@ -1,7 +1,6 @@
 from PyQt6.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt6.QtCore import Qt, QEvent
 from PyQt6.QtGui import QKeyEvent
-from PyQt6.sip import cast
 
 def getTextFromQKeyEvent(x:QKeyEvent):
     return Qt.Key(x.key()).name[4:]
@@ -10,8 +9,6 @@ class btnIgnoreKeys(QPushButton):
     def __init__(self, text:str="", parent:QWidget=None):
         super().__init__(text,parent)
     def keyPressEvent(self, a0):
-        if a0.key() == Qt.Key.Key_Tab:
-            print("hio")
         a0.ignore()
 
 class KeyboardDialog(QDialog):
@@ -23,56 +20,61 @@ class KeyboardDialog(QDialog):
         self.btn = btnIgnoreKeys()
         self.btn.clicked.connect(self.startListening)
         self.label = QLabel()
-        
+
         main_lay = QVBoxLayout()
         main_lay.addWidget(self.label)
         main_lay.addWidget(self.btn)
-        
-        ok = QPushButton("OK")
+
         cancel = QPushButton("Cancel")
+        ok = QPushButton("OK")
         
-        ok.clicked.connect(self.accept)
+        cancel.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        ok.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+
         cancel.clicked.connect(self.reject)
-        
+        ok.clicked.connect(self.accept)
+
         btn_lay = QHBoxLayout()
         btn_lay.addStretch()
-        btn_lay.addWidget(ok)
         btn_lay.addWidget(cancel)
-        
+        btn_lay.addWidget(ok)
+
         main_lay.addLayout(btn_lay)
-        
+
         self.setLayout(main_lay)
         self.installEventFilter(self)
-    
+
     class DialogMode():
         SINGLE_KEY = 0
         SHORTCUT = 1
-    
+
     def keyPressEvent(self, a0):
-        print(Qt.Key(a0.key()).name)
         if not self.awaitingInput: return super().keyPressEvent(a0)
         if self.mode == 0:
             self.data = a0.clone()
             self.stopListening()
         else:
             self.data[getTextFromQKeyEvent(a0)] = a0.clone()
-        self.updateText()
+            # if not getTextFromQKeyEvent(a0).upper() in Qt.Modifier._member_names_:
+                # self.stopListening()
+        self.btn.setText(f"({self.updateText()})")
     def keyReleaseEvent(self, a0):
         if not self.awaitingInput: return super().keyReleaseEvent(a0)
         if self.mode == 0: return
+        return
         if getTextFromQKeyEvent(a0) in self.data:
             self.data.pop(getTextFromQKeyEvent(a0))
         self.btn.setText(f"({self.updateText()})")
     def eventFilter(self, a0, a1):
-        if a1.type() == QEvent.Type.KeyPress:
-            if QKeyEvent(a1) == Qt.Key.Key_Tab:
-                self.keyPressEvent(QKeyEvent(a1))
+        if type(a1) == QKeyEvent:
+            if a1.key() == Qt.Key.Key_Tab:
+                if a1.type() == QKeyEvent.Type.KeyPress:
+                    self.keyPressEvent(a1)
+                else:
+                    self.keyReleaseEvent(a1)
                 return False
-        elif a1.type() == QEvent.Type.KeyRelease:
-            print(a1)
-            return False
         return super().eventFilter(a0, a1)
-    
+
     def updateText(self) -> str:
         if self.mode == 0:
             txt = getTextFromQKeyEvent(self.data)
@@ -81,12 +83,15 @@ class KeyboardDialog(QDialog):
         self.btn.setText(txt)
         return txt
     def startListening(self):
+        if self.awaitingInput:
+            return self.stopListening()
+        if self.mode == 1: self.data.clear()
         self.btn.setText("(...)")
         self.awaitingInput = True
     def stopListening(self):
         self.awaitingInput = False
         self.updateText()
-    
+
     @staticmethod
     def getKey(parent:QWidget=None,title:str="",label:str="") -> tuple[QKeyEvent|None, bool]:
         dia = KeyboardDialog(parent,KeyboardDialog.DialogMode.SINGLE_KEY)
