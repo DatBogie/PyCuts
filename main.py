@@ -1,5 +1,8 @@
 import os, sys, json
 from pynput import keyboard
+from ui import mk_config_dir
+
+mk_config_dir()
 
 modifiers = {
     "cmd":False,

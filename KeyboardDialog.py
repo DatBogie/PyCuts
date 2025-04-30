@@ -3,7 +3,7 @@ from PyQt6.QtCore import Qt, QEvent
 from PyQt6.QtGui import QKeyEvent
 
 def getTextFromQKeyEvent(x:QKeyEvent):
-    return Qt.Key(x.key()).name[4:]
+    return "Tab" if x.key() == Qt.Key.Key_Backtab else Qt.Key(x.key()).name[4:]
 
 class btnIgnoreKeys(QPushButton):
     def __init__(self, text:str="", parent:QWidget=None):

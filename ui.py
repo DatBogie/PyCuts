@@ -1,8 +1,22 @@
-import sys, os
+import sys, os, json
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QInputDialog, QTableWidget, QTableWidgetItem
+from PyQt6.QtCore import QTimer
 from KeyboardDialog import KeyboardDialog, getTextFromQKeyEvent
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QKeyEvent
+
+def get_config_dir():
+    return os.path.join(os.path.expanduser("~"),".config","pycuts") if sys.platform != "win32" else os.path.join(os.expanduser("~"),"AppData","Local","PyCuts")
+
+def mk_config_dir():
+    p = get_config_dir()
+    if os.path.exists(p): return
+    def_data = {
+        "shortcuts": []
+    }
+    os.makedirs(p)
+    with open(os.path.join(p,"config.json"),"w") as f:
+        json.dump(def_data,f,indent=4)
+
+mk_config_dir()
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -46,12 +60,28 @@ class MainWindow(QMainWindow):
         self.ls.setItem(self.ls.rowCount()-1,1,QTableWidgetItem(c))
         # self.ls.setItem(self.ls.rowCount()-1,2,QTableWidgetItem(getTextFromQKeyEvent(k)))
         self.ls.setItem(self.ls.rowCount()-1,2,QTableWidgetItem(" + ".join([getTextFromQKeyEvent(x) for x in k.values()])))
+        QTimer.singleShot(200,self.save_data)
     def del_row(self):
         self.ls.removeRow(self.ls.currentRow())
+    def save_data(self):
+        data = []
+        for row in range(self.ls.rowCount()-1):
+            data.append({})
+            for col in range(self.ls.columnCount()):
+                item = self.ls.item(row,col)
+                data[row][self.ls.horizontalHeaderItem(col).text()] = item.text()
+        print(f"Saving data : {data}...")
+        try:
+            with open(os.path.join(get_config_dir(),"config.json")) as f:
+                json.dump(data,f)
+        except Exception as e:
+            print(f"Failed to save: {e}")
         
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = MainWindow()
     win.show()
-    sys.exit(app.exec())
+    exit_code = app.exec()
+    win.save_data()
+    sys.exit(exit_code)
