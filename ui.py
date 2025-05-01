@@ -1,7 +1,7 @@
 import sys, os, json
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QInputDialog, QTableWidget, QTableWidgetItem, QMessageBox
 from PyQt6.QtCore import Qt
-from KeyboardDialog import KeyboardDialog, getTextFromQKeyEvent
+from KeyboardDialog import KeyboardDialog
 
 def get_config_dir():
     return os.path.join(os.path.expanduser("~"),".config","pycuts") if sys.platform != "win32" else os.path.join(os.path.expanduser("~"),"AppData","Local","PyCuts")
@@ -50,6 +50,8 @@ class MainWindow(QMainWindow):
         edit.setToolTip("Edit selected global shortcut")
         delete = QPushButton("Delete")
         delete.setToolTip("Delete selected global shortcut")
+        helpbtn = QPushButton("?")
+        helpbtn.setToolTip("See list of all valid keys")
         
         new.clicked.connect(self.new)
         edit.clicked.connect(self.edit_current_shortcut)
@@ -58,6 +60,7 @@ class MainWindow(QMainWindow):
         btn_lay.addWidget(new)
         btn_lay.addWidget(edit)
         btn_lay.addWidget(delete)
+        btn_lay.addWidget
         
         if LOAD_DATA:
             self.ls.setRowCount(len(LOAD_DATA))
@@ -81,14 +84,14 @@ class MainWindow(QMainWindow):
         self.ls.setItem(self.ls.rowCount()-1,0,QTableWidgetItem(t))
         self.ls.setItem(self.ls.rowCount()-1,1,QTableWidgetItem(c))
         # self.ls.setItem(self.ls.rowCount()-1,2,QTableWidgetItem(getTextFromQKeyEvent(k)))
-        self.ls.setItem(self.ls.rowCount()-1,2,QTableWidgetItem(" + ".join([getTextFromQKeyEvent(x) for x in k.values()])))
+        self.ls.setItem(self.ls.rowCount()-1,2,QTableWidgetItem(" + ".join([x for x in k.values()])))
         self.save_data()
     def edit_current_shortcut(self):
         row = self.ls.currentRow()
         if row == -1: return
         k, s = KeyboardDialog.getShortcut(self, "Edit Shortcut - PyCuts",f"Shortcut '{self.ls.item(row,0).text()}'\nPress shortcut key(s):")
         if not s or not k: return
-        self.ls.setItem(row,2,QTableWidgetItem(" + ".join([getTextFromQKeyEvent(x) for x in k.values()])))
+        self.ls.setItem(row,2,QTableWidgetItem(" + ".join([x for x in k.values()])))
         self.save_data()
     def del_row(self):
         if self.ls.currentRow() == -1: return

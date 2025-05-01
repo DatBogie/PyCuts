@@ -3,8 +3,15 @@ from PyQt6.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayo
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QKeyEvent
 
+MAP = {
+    "Control": "Meta",
+    "Meta": "Control"
+}
+
 def getTextFromQKeyEvent(x:QKeyEvent):
-    return "Tab" if x.key() == Qt.Key.Key_Backtab else Qt.Key(x.key()).name[4:]
+    key = "Tab" if x.key() == Qt.Key.Key_Backtab else Qt.Key(x.key()).name[4:]
+    if key in MAP.keys(): return MAP[key]
+    return key
 
 class btnIgnoreKeys(QPushButton):
     def __init__(self, text:str="", parent:QWidget=None):
@@ -15,7 +22,7 @@ class btnIgnoreKeys(QPushButton):
 class KeyboardDialog(QDialog):
     def __init__(self, parent=None, mode:int=0):
         super().__init__(parent)
-        self.setFixedSize(250,125)
+        self.setFixedSize(250,150)
         
         self.awaitingInput = False
         self.mode = mode
@@ -59,10 +66,10 @@ class KeyboardDialog(QDialog):
     def keyPressEvent(self, a0):
         if not self.awaitingInput: return super().keyPressEvent(a0)
         if self.mode == 0:
-            self.data = a0.clone()
+            self.data = getTextFromQKeyEvent(a0)
             self.stopListening()
         else:
-            self.data[getTextFromQKeyEvent(a0)] = a0.clone()
+            self.data[getTextFromQKeyEvent(a0)] = getTextFromQKeyEvent(a0)
             # if not getTextFromQKeyEvent(a0).upper() in Qt.Modifier._member_names_:
                 # self.stopListening()
         self.btn.setText(f"({self.updateText()})")

@@ -15,7 +15,17 @@ class FileChangedHandler(FileSystemEventHandler):
         if event.src_path.endswith(self.path):
             update_shortcuts()
 
+def f_upd_t():
+    handler = FileChangedHandler("config.json")
+    observer = Observer()
+    observer.schedule(handler,get_config_dir(),recursive=False)
+    observer.start()
+
 pressed = {}
+
+MAP = {
+    "Key.cmd": ""
+}
 
 SHORTCUTS = []
 
@@ -24,19 +34,18 @@ def update_shortcuts():
     with open(os.path.join(get_config_dir(),"config.json")) as f:
         SHORTCUTS = json.load(f)
 
-
+def get_text_from_key(key):
+    try:
+        return key.name
+    except:
+        return key.char
 
 def on_press(key):
-    try:
-        pressed[key.name] = True
-    except:
-        pressed[key.char] = True
+    pressed[get_text_from_key(key)] = True
+    print(get_text_from_key(key))
 
 def on_release(key):
-    try:
-        pressed[key.name] = False
-    except:
-        pressed[key.char] = False
+    pressed[get_text_from_key(key)] = False
 
 # Set up the keyboard listener
 keyboard_listener = keyboard.Listener(
