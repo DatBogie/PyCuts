@@ -1,7 +1,14 @@
-import sys, os, json
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QInputDialog, QTableWidget, QTableWidgetItem, QMessageBox
+import sys, os, json, time
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QInputDialog, QTableWidget, QTableWidgetItem, QMessageBox, QListWidget, QLineEdit
 from PyQt6.QtCore import Qt
-from KeyboardDialog import KeyboardDialog
+from KeyboardDialog import KeyboardDialog, getTextFromQKeyEvent
+from pynput import keyboard
+
+def get_text_from_key(key):
+    try:
+        return key.name
+    except:
+        return key.char
 
 def get_config_dir():
     return os.path.join(os.path.expanduser("~"),".config","pycuts") if sys.platform != "win32" else os.path.join(os.path.expanduser("~"),"AppData","Local","PyCuts")
@@ -20,6 +27,13 @@ def mk_config_dir():
         json.dump(def_data,f,indent=4)
 
 mk_config_dir()
+
+class squareBtn(QPushButton):
+    def resizeEvent(self, a0):
+        size = min(a0.size().width(),a0.size().height())
+        self.setFixedSize(size,size)
+        super().resizeEvent(a0)
+        
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -50,26 +64,46 @@ class MainWindow(QMainWindow):
         edit.setToolTip("Edit selected global shortcut")
         delete = QPushButton("Delete")
         delete.setToolTip("Delete selected global shortcut")
-        helpbtn = QPushButton("?")
+        helpbtn = squareBtn("?")
         helpbtn.setToolTip("See list of all valid keys")
         
         new.clicked.connect(self.new)
         edit.clicked.connect(self.edit_current_shortcut)
         delete.clicked.connect(self.del_row)
+        helpbtn.clicked.connect(self.show_help)
         
         btn_lay.addWidget(new)
         btn_lay.addWidget(edit)
         btn_lay.addWidget(delete)
-        btn_lay.addWidget
+        btn_lay.addWidget(helpbtn)
+        
+        self.ls.setColumnCount(3)
+        
+        self.help_menu = QWidget()
+        help_main_lay = QVBoxLayout()
+        
+        help_filter = QLineEdit()
+        help_main_lay.addWidget(help_filter)
+        
+        help_list = QListWidget()
+        help_list.addItems([getTextFromQKeyEvent(x) for x in Qt.Key])
+        help_list.addItems([get_text_from_key(x) for x in keyboard.Key])
+        help_main_lay.addWidget(help_list)
+        
+        self.help_menu.show()
         
         if LOAD_DATA:
-            self.ls.setRowCount(len(LOAD_DATA))
-            self.ls.setColumnCount(len(LOAD_DATA[0].keys()))
-            for row, x in enumerate(LOAD_DATA):
-                t, c, k = x["Name"], x["Command"], x["Shortcut"]
-                self.ls.setItem(row,0,QTableWidgetItem(t))
-                self.ls.setItem(row,1,QTableWidgetItem(c))
-                self.ls.setItem(row,2,QTableWidgetItem(k))
+            try:
+                self.ls.setRowCount(len(LOAD_DATA))
+                for row, x in enumerate(LOAD_DATA):
+                    t, c, k = x["Name"], x["Command"], x["Shortcut"]
+                    self.ls.setItem(row,0,QTableWidgetItem(t))
+                    self.ls.setItem(row,1,QTableWidgetItem(c))
+                    self.ls.setItem(row,2,QTableWidgetItem(k))
+            except Exception as e:
+                print(f"Failed to load config file: {e}")
+                self.ls.setRowCount(0)
+                print(f"Backing up current config file to {os.path.join(get_config_dir(),f"config{int(time.time())}.json.bak")}")
                 
         
         main_lay.addWidget(self.ls)
@@ -113,6 +147,9 @@ class MainWindow(QMainWindow):
                 json.dump(data,f,indent=4)
         except Exception as e:
             print(f"Failed to save: {e}")
+    
+    def show_help(self):
+        self.help_menu.show()
         
 
 if __name__ == "__main__":

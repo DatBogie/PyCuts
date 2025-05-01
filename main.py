@@ -1,6 +1,6 @@
 import os, sys, json
 from pynput import keyboard
-from ui import mk_config_dir, get_config_dir
+from ui import mk_config_dir, get_config_dir, get_text_from_key
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
@@ -33,12 +33,6 @@ def update_shortcuts():
     global SHORTCUTS
     with open(os.path.join(get_config_dir(),"config.json")) as f:
         SHORTCUTS = json.load(f)
-
-def get_text_from_key(key):
-    try:
-        return key.name
-    except:
-        return key.char
 
 def on_press(key):
     pressed[get_text_from_key(key)] = True

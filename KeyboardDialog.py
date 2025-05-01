@@ -8,8 +8,9 @@ MAP = {
     "Meta": "Control"
 }
 
-def getTextFromQKeyEvent(x:QKeyEvent):
-    key = "Tab" if x.key() == Qt.Key.Key_Backtab else Qt.Key(x.key()).name[4:]
+def getTextFromQKeyEvent(x:QKeyEvent|Qt.Key):
+    k = x.key() if type(x) == QKeyEvent else x
+    key = "Tab" if k == Qt.Key.Key_Backtab else Qt.Key(k).name[4:]
     if key in MAP.keys(): return MAP[key]
     return key
 
@@ -22,7 +23,7 @@ class btnIgnoreKeys(QPushButton):
 class KeyboardDialog(QDialog):
     def __init__(self, parent=None, mode:int=0):
         super().__init__(parent)
-        self.setFixedSize(250,150)
+        # self.setFixedSize(250,150)
         
         self.awaitingInput = False
         self.mode = mode
