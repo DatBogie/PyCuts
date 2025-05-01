@@ -24,7 +24,7 @@ def f_upd_t():
 pressed = {}
 
 MAP = {
-    "Key.cmd": ""
+    "meta": "cmd"
 }
 
 SHORTCUTS = []
