@@ -1,3 +1,5 @@
 PyQt6
 pynput
+pystray
+watchdog
 pyinstaller

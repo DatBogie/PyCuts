@@ -1,6 +1,6 @@
 import sys
-from PyQt6.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
-from PyQt6.QtCore import Qt, QEvent
+from PyQt6.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QSizePolicy
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QKeyEvent
 
 def getTextFromQKeyEvent(x:QKeyEvent):
@@ -15,6 +15,8 @@ class btnIgnoreKeys(QPushButton):
 class KeyboardDialog(QDialog):
     def __init__(self, parent=None, mode:int=0):
         super().__init__(parent)
+        self.setFixedSize(250,125)
+        
         self.awaitingInput = False
         self.mode = mode
         self.data = {} if mode == 1 else None

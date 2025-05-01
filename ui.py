@@ -1,6 +1,6 @@
 import sys, os, json
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QInputDialog, QTableWidget, QTableWidgetItem, QMessageBox
-from PyQt6.QtCore import QTimer
+from PyQt6.QtCore import Qt
 from KeyboardDialog import KeyboardDialog, getTextFromQKeyEvent
 
 def get_config_dir():
@@ -24,8 +24,8 @@ mk_config_dir()
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.setWindowTitle("PyCuts")
         self.setMinimumSize(400,200)
-        self.setFixedSize(400,200)
         central = QWidget()
         self.setCentralWidget(central)
         
@@ -33,7 +33,10 @@ class MainWindow(QMainWindow):
         central.setLayout(main_lay)
         
         self.ls = QTableWidget()
-        main_lay.addWidget(QLabel("Global Shortcuts"))
+        lbl = QLabel("Global Shortcuts")
+        lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        main_lay.addWidget(lbl)
+        
         self.ls.setRowCount(0)
         self.ls.setColumnCount(3)
         self.ls.setHorizontalHeaderLabels(["Name","Command","Shortcut"])
@@ -42,8 +45,11 @@ class MainWindow(QMainWindow):
         main_lay.addLayout(btn_lay)
         
         new = QPushButton("New")
+        new.setToolTip("Register new global shortcut")
         edit = QPushButton("Edit Shortcut")
+        edit.setToolTip("Edit selected global shortcut")
         delete = QPushButton("Delete")
+        delete.setToolTip("Delete selected global shortcut")
         
         new.clicked.connect(self.new)
         edit.clicked.connect(self.edit_current_shortcut)
@@ -65,26 +71,28 @@ class MainWindow(QMainWindow):
         
         main_lay.addWidget(self.ls)
     def new(self):
-        t, s = QInputDialog.getText(self,"PyCuts - New Shortcut","Enter shortcut's name:")
+        t, s = QInputDialog.getText(self,"New Shortcut - PyCuts","Enter shortcut's name:")
         if not s: return
-        c, s = QInputDialog.getText(self,"PyCuts - New Shortcut",f"Shortcut '{t}'\nEnter command:")
+        c, s = QInputDialog.getText(self,"New Shortcut - PyCuts",f"Shortcut '{t}'\nEnter command:")
         if not s: return
-        k, s = KeyboardDialog.getShortcut(self, "PyCuts - New Shortcut",f"Shortcut '{t}'\nPress shortcut key(s):")
-        if not s or not k: return   
+        k, s = KeyboardDialog.getShortcut(self, "New Shortcut - PyCuts",f"Shortcut '{t}'\nPress shortcut key(s):")
+        if not s or not k: return
         self.ls.setRowCount(self.ls.rowCount()+1)
         self.ls.setItem(self.ls.rowCount()-1,0,QTableWidgetItem(t))
         self.ls.setItem(self.ls.rowCount()-1,1,QTableWidgetItem(c))
         # self.ls.setItem(self.ls.rowCount()-1,2,QTableWidgetItem(getTextFromQKeyEvent(k)))
         self.ls.setItem(self.ls.rowCount()-1,2,QTableWidgetItem(" + ".join([getTextFromQKeyEvent(x) for x in k.values()])))
-        QTimer.singleShot(1000,self.save_data)
+        self.save_data()
     def edit_current_shortcut(self):
         row = self.ls.currentRow()
-        k, s = KeyboardDialog.getShortcut(self, "PyCuts - Edit Shortcut",f"Shortcut '{self.ls.item(row,0).text()}'\nPress shortcut key(s):")
+        if row == -1: return
+        k, s = KeyboardDialog.getShortcut(self, "Edit Shortcut - PyCuts",f"Shortcut '{self.ls.item(row,0).text()}'\nPress shortcut key(s):")
         if not s or not k: return
         self.ls.setItem(row,2,QTableWidgetItem(" + ".join([getTextFromQKeyEvent(x) for x in k.values()])))
         self.save_data()
     def del_row(self):
-        btn = QMessageBox.warning(self,"PyCuts = Remove Shortcut",f"Are you sure you want to delete '{self.ls.item(self.ls.currentRow(),0).text()}'?",QMessageBox.StandardButton.Yes,QMessageBox.StandardButton.No)
+        if self.ls.currentRow() == -1: return
+        btn = QMessageBox.warning(self,"Remove Shortcut - PyCuts",f"Are you sure you want to delete '{self.ls.item(self.ls.currentRow(),0).text()}'?",QMessageBox.StandardButton.Yes,QMessageBox.StandardButton.No)
         if btn == QMessageBox.StandardButton.Yes:
             self.ls.removeRow(self.ls.currentRow())
         self.save_data()
