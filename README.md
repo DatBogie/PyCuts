@@ -1,5 +1,5 @@
 # <img src="./PyCutsTrayIcon.png" height="20px"> PyCuts
-GUI global shortcuts/manager for apps and commands, written in Python.
+GUI global shortcuts service and manager for apps and commands, written in Python.
 
 ---
 
