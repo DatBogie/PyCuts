@@ -18,7 +18,9 @@ pyinstaller ../ui.py -n "PyCuts Config" -w -i "../PyCuts.icns" --noconfirm \
 --add-data "../PyCutsTrayIcon.png:./" \
 --add-data "../PyCutsTrayIconMono.png:./"
 
-mv "./dist/PyCuts Config.app" ~/Applications
+rm -rf "./dist/PyCuts Config"
+
+cp -f "./dist/PyCuts Config.app" ~/Applications
 
 echo "Built 'PyCuts' to PyCuts/scripts/dist/PyCuts"
 echo "Built 'PyCuts Config.app' to ~/Applications/PyCuts Config.app"

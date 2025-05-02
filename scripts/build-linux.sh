@@ -22,9 +22,9 @@ pyinstaller ../ui.py -n "PyCuts Config" --onefile --noconfirm \
 mkdir -p ~/.local/share/PyCuts
 
 # copy files
-cp "./dist/PyCuts" ~/.local/share/PyCuts/pycuts
-cp "./dist/PyCuts Config" ~/.local/share/PyCuts/config
-cp "../PyCutsTrayIcon.png" ~/.local/share/PyCuts/icon.png
+cp -f "./dist/PyCuts" ~/.local/share/PyCuts/pycuts
+cp -f "./dist/PyCuts Config" ~/.local/share/PyCuts/config
+cp -f "../PyCutsTrayIcon.png" ~/.local/share/PyCuts/icon.png
 
 # write .dekstop main
 echo """[Desktop Entry]
