@@ -4,7 +4,7 @@ cd "$SCRIPT_DIR"
 
 # venv
 if [ ! -f "../.venv/bin/activate" ]; then
-    "../mk-venv.sh"
+    "./mk-venv.sh"
 fi
 source "../.venv/bin/activate"
 

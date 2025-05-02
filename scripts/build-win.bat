@@ -4,7 +4,7 @@ cd /d %SCRIPT_DIR%
 
 :: venv
 IF NOT EXIST "..\.venv\Scripts\activate.bat" (
-    call "..\mk-venv.bat"
+    call ".\mk-venv.bat"
 )
 call "..\.venv\Scripts\activate.bat"
 
