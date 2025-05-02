@@ -34,7 +34,7 @@ Icon=~/.local/share/PyCuts/icon.png
 Exec=~/.local/share/PyCuts/pycuts
 Comment=Global Keyboard Shortcuts Service
 Categories=Utility;
-Terminal=false""" > ~/.local/share/PyCuts/PyCuts.desktop
+Terminal=false""" > ~/.local/share/applications/PyCuts.desktop
 
 # write .dekstop config
 echo """[Desktop Entry]
@@ -44,4 +44,4 @@ Icon=~/.local/share/PyCuts/icon.png
 Exec=~/.local/share/PyCuts/config
 Comment=Graphical Global Keyboard Shortcuts Manager
 Categories=Settings;DesktopSettings;Qt;
-Terminal=false""" > ~/.local/share/PyCuts/PyCuts\ Config.desktop
+Terminal=false""" > ~/.local/share/applications/PyCuts\ Config.desktop
