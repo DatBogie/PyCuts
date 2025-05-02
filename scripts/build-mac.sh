@@ -9,6 +9,14 @@ fi
 source "../.venv/bin/activate"
 
 # build
-pyinstaller ../main.py -n "PyCuts" -w -i "../PyCuts.icns" --noconfirm \
+pyinstaller ../main.py -n "PyCuts" --onefile --noconfirm \
 --add-data "../PyCutsTrayIcon.png:./" \
 --add-data "../PyCutsTrayIconMono.png:./"
+
+# build config
+pyinstaller ../ui.py -n "PyCuts Config" -w -i "../PyCuts.icns" --noconfirm \
+--add-data "../PyCutsTrayIcon.png:./" \
+--add-data "../PyCutsTrayIconMono.png:./"
+
+echo "Built 'PyCuts' to PyCuts/scripts/dist/PyCuts"
+echo "Built 'PyCuts Config.app' to ~/Applications/PyCuts Config.app"
