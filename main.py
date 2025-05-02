@@ -103,6 +103,7 @@ listener_thread.start()
 log("Started listener_thread")
 
 app = QApplication(sys.argv)
+app.setQuitOnLastWindowClosed(False)
 
 tray = QSystemTrayIcon(QIcon(os.path.join(CDIR,"PyCutsTrayIcon.png" if sys.platform != "darwin" else "PyCutsTrayIconMono.png")),parent=app)
 tray.setToolTip("PyCuts")
