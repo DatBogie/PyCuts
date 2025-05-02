@@ -1,10 +1,9 @@
 # PyCuts
----
 GUI global shortcuts/manager for apps and commands, written in Python.
 
-# Installation/Use
 ---
 
+# Installation/Use
 Every supported OS (Windows, Linux, macOS) will have a `.zip` file in each release. Each archive contains two items:
 
 1. `PyCuts`
@@ -32,9 +31,9 @@ Every supported OS (Windows, Linux, macOS) will have a `.zip` file in each relea
 5. Open `PyCuts` with Terminal to start the PyCuts listener service.
 6. Right click on the tray icon and select `Open GUI` to open the GUI manager, or simply open `PyCuts Config.app`.
 
-# Building from Source
 ---
 
+# Building from Source
 > [!Important]
 > Python (`>=3.9`) must be installed, and it must be in PATH—running `python` (Windows) or `python3` must bring you into a Python shell.
 
@@ -60,3 +59,4 @@ Every supported OS (Windows, Linux, macOS) will have a `.zip` file in each relea
 	```
 	python3 build.py
 	```
+---
