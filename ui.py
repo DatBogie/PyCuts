@@ -1,8 +1,11 @@
 import sys, os, json, time
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QInputDialog, QTableWidget, QTableWidgetItem, QMessageBox, QListWidget, QLineEdit
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon
 from KeyboardDialog import KeyboardDialog, getTextFromQKeyEvent
 from pynput import keyboard
+
+CDIR = os.path.abspath("./") if not hasattr(sys,"_MEIPASS") else sys._MEIPASS
 
 def get_text_from_key(key):
     try:
@@ -20,11 +23,16 @@ if os.path.exists(get_config_dir()) and os.path.exists(os.path.join(get_config_d
 
 def mk_config_dir():
     p = get_config_dir()
-    if os.path.exists(p): return
+    if os.path.exists(p):
+        with open(os.path.join(p,"latest.log"),"w") as f:
+            f.write("")
+        return
     def_data = []
     os.makedirs(p)
     with open(os.path.join(p,"config.json"),"w") as f:
         json.dump(def_data,f,indent=4)
+    with open(os.path.join(p,"latest.log"),"w") as f:
+        f.write("")
 
 mk_config_dir()
 
@@ -42,6 +50,10 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(400,200)
         central = QWidget()
         self.setCentralWidget(central)
+        
+        try:
+            self.setWindowIcon(QIcon(os.path.join(CDIR,"PyCutsTrayIcon.png")))
+        except: pass
         
         main_lay = QVBoxLayout()
         central.setLayout(main_lay)
@@ -80,17 +92,20 @@ class MainWindow(QMainWindow):
         self.ls.setColumnCount(3)
         
         self.help_menu = QWidget()
+        self.help_menu.setWindowTitle("Keys - PyCuts")
+        
         help_main_lay = QVBoxLayout()
+        self.help_menu.setLayout(help_main_lay)
         
-        help_filter = QLineEdit()
-        help_main_lay.addWidget(help_filter)
+        self.help_filter = QLineEdit()
+        help_main_lay.addWidget(self.help_filter)
+        self.help_filter.textEdited.connect(self.help_filter_text)
         
-        help_list = QListWidget()
-        help_list.addItems([getTextFromQKeyEvent(x) for x in Qt.Key])
-        help_list.addItems([get_text_from_key(x) for x in keyboard.Key])
-        help_main_lay.addWidget(help_list)
-        
-        self.help_menu.show()
+        self.help_list = QListWidget()
+        items = [*[getTextFromQKeyEvent(x) for x in Qt.Key],*[get_text_from_key(x) for x in keyboard.Key]]
+        items.sort()
+        self.help_list.addItems(items)
+        help_main_lay.addWidget(self.help_list)
         
         if LOAD_DATA:
             try:
@@ -151,11 +166,20 @@ class MainWindow(QMainWindow):
     def show_help(self):
         self.help_menu.show()
         
+    def help_filter_text(self):
+        txt = self.help_filter.text()
+        for i in range(self.help_list.count()):
+            item = self.help_list.item(i)
+            item.setHidden(not (txt == "" or item.text().lower().find(txt.lower()) != -1))
+        
+def run():
+    try:
+        app = QApplication(sys.argv)
+        win = MainWindow()
+        win.show()
+        exit_code = app.exec()
+        win.save_data()
+        sys.exit(exit_code)
+    except: pass
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    win = MainWindow()
-    win.show()
-    exit_code = app.exec()
-    win.save_data()
-    sys.exit(exit_code)
+if __name__ == "__main__": run()
