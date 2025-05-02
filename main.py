@@ -1,15 +1,17 @@
-import os, sys, json, subprocess, pystray
+import os, sys, json, subprocess
 from pynput import keyboard
-from ui import mk_config_dir, get_config_dir, get_text_from_key, run
+from ui import mk_config_dir, get_config_dir, get_text_from_key, MainWindow
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from threading import Thread
-from PIL import Image
+from PyQt6.QtWidgets import QApplication, QSystemTrayIcon, QMenu
+from PyQt6.QtGui import QAction, QIcon
+from PyQt6.QtCore import QCoreApplication
 
 mk_config_dir()
 
 def log(*args):
-    print(" ".join([str(x) for x in list(args)]))
+    print(" ".join([str(x) for x in list(args)]),"\n")
     with open(os.path.join(get_config_dir(),"latest.log"),"a") as f:
         f.write("\n")
         for x in list(args):
@@ -100,22 +102,39 @@ listener_thread.daemon = True
 listener_thread.start()
 log("Started listener_thread")
 
-def stop_icon(icon, item):
-    if keyboard_listener: keyboard_listener.stop()
-    icon.stop()
+app = QApplication(sys.argv)
 
-icon_data = Image.new('RGB', (64, 64), 'white')
-try:
-    with open(os.path.join(CDIR,"PyCutsTrayIcon.png" if sys.platform != "darwin" else "PyCutsTrayIconMono.png"), "rb") as f:
-        icon_data = Image.open(f).copy()
-except: pass
-tray_menu = pystray.Menu(
-    pystray.MenuItem("Open UI",run),
-    pystray.MenuItem("Exit" if sys.platform != "darwin" else "Quit PyCuts",stop_icon)
-)
-icon = pystray.Icon('PyCuts', icon_data, 'PyCuts', tray_menu)
+tray = QSystemTrayIcon(QIcon(os.path.join(CDIR,"PyCutsTrayIcon.png" if sys.platform != "darwin" else "PyCutsTrayIconMono.png")),parent=app)
+tray.setToolTip("PyCuts")
 
-icon.run()
+def close():
+    tray.hide()
+    QCoreApplication.quit()
+
+tray_menu = QMenu()
+
+win = None
+
+def run():
+    global win
+    if not win: win = MainWindow()
+    win.show()
+    win.raise_()
+    win.activateWindow()
+
+open_ui = QAction("Open UI")
+open_ui.triggered.connect(run)
+tray_menu.addAction(open_ui)
+
+exit_act = QAction("Exit" if sys.platform != "darwin" else "Quit PyCuts")
+exit_act.triggered.connect(close)
+tray_menu.addAction(exit_act)
+
+tray.setContextMenu(tray_menu)
+tray.show()
+
+app.exec()
+
 log("Exitting...")
 listener_thread.join()
 watch_thread.join()

@@ -173,13 +173,14 @@ class MainWindow(QMainWindow):
             item.setHidden(not (txt == "" or item.text().lower().find(txt.lower()) != -1))
         
 def run():
-    try:
-        app = QApplication(sys.argv)
-        win = MainWindow()
-        win.show()
-        exit_code = app.exec()
-        win.save_data()
-        sys.exit(exit_code)
-    except: pass
+    win = MainWindow()
+    win.show()
+    win.save_data()
 
-if __name__ == "__main__": run()
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    win = MainWindow()
+    win.show()
+    exit_code = app.exec()
+    win.save_data()
+    sys.exit(exit_code)
