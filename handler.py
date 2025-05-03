@@ -16,6 +16,13 @@ def handler():
 
     CDIR = os.path.abspath("./") if not hasattr(sys,"_MEIPASS") else sys._MEIPASS
     log(f"CDIR={CDIR}")
+    
+    if os.path.exists(os.path.join(CDIR,"__LOCK__")):
+        log("__LOCK__ present; quitting...")
+        raise Exception
+    else:
+        with open(os.path.join(CDIR,"__LOCK__"),"w") as f:
+                f.write("")
 
     class FileChangedHandler(FileSystemEventHandler):
         def __init__(self, path:str):

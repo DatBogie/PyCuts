@@ -2,7 +2,7 @@ import os, sys, multiprocessing
 from ui import mk_config_dir, get_config_dir, MainWindow
 from PyQt6.QtWidgets import QApplication, QSystemTrayIcon, QMenu
 from PyQt6.QtGui import QAction, QIcon
-from PyQt6.QtCore import QCoreApplication
+from PyQt6.QtCore import QCoreApplication, QTimer
 from handler import handler
 
 mk_config_dir()
@@ -18,6 +18,10 @@ CDIR = os.path.abspath("./") if not hasattr(sys,"_MEIPASS") else sys._MEIPASS
 log(f"CDIR={CDIR}")
 
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
+    
+    if os.path.exists(os.path.join(CDIR,"__LOCK__")):
+        os.remove(os.path.join(CDIR,"__LOCK__"))
     
     app = QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
@@ -57,5 +61,9 @@ if __name__ == "__main__":
     process.start()
 
     app.exec()
+    process.terminate()
     log("Exitting...")
     process.join()
+    
+    if os.path.exists(os.path.join(CDIR,"__LOCK__")):
+        os.remove(os.path.join(CDIR,"__LOCK__"))
