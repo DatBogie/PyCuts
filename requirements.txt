@@ -1,4 +1,4 @@
 PyQt6
-pynput
+PyQt6-QHotkey
 watchdog
 pyinstaller

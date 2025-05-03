@@ -171,11 +171,6 @@ class MainWindow(QMainWindow):
         for i in range(self.help_list.count()):
             item = self.help_list.item(i)
             item.setHidden(not (txt == "" or item.text().lower().find(txt.lower()) != -1))
-        
-def run():
-    win = MainWindow()
-    win.show()
-    win.save_data()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

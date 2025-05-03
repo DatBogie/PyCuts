@@ -1,12 +1,9 @@
-import os, sys, json, subprocess
-from pynput import keyboard
-from ui import mk_config_dir, get_config_dir, get_text_from_key, MainWindow
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
-from threading import Thread
+import os, sys, multiprocessing
+from ui import mk_config_dir, get_config_dir, MainWindow
 from PyQt6.QtWidgets import QApplication, QSystemTrayIcon, QMenu
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import QCoreApplication
+from handler import handler
 
 mk_config_dir()
 
@@ -20,122 +17,45 @@ def log(*args):
 CDIR = os.path.abspath("./") if not hasattr(sys,"_MEIPASS") else sys._MEIPASS
 log(f"CDIR={CDIR}")
 
-class FileChangedHandler(FileSystemEventHandler):
-    def __init__(self, path:str):
-        super().__init__()
-        self.path = path
+if __name__ == "__main__":
     
-    def on_modified(self, event):
-        if event.src_path.endswith(self.path):
-            update_shortcuts()
+    app = QApplication(sys.argv)
+    app.setQuitOnLastWindowClosed(False)
 
-def f_upd_t():
-    handler = FileChangedHandler("config.json")
-    observer = Observer()
-    observer.schedule(handler,get_config_dir(),recursive=False)
-    observer.start()
+    tray = QSystemTrayIcon(QIcon(os.path.join(CDIR,"PyCutsTrayIcon.png" if sys.platform != "darwin" else "PyCutsTrayIconMono.png")),parent=app)
+    tray.setToolTip("PyCuts")
 
-watch_thread = Thread(target=f_upd_t)
-watch_thread.start()
+    def close():
+        with open(os.path.join(CDIR,"__BREAK__"),"w") as f:
+            f.write("")
+        tray.hide()
+        QCoreApplication.quit()
 
-pressed = {}
+    tray_menu = QMenu()
 
-MAP = { # Qt => pynput
-    "Meta": "cmd",
-    "Control": "ctrl",
-    "CapsLock": "caps_lock"
-}
+    win = None
 
-def map_from_qt_key(key:str): # `key` is `str` from `Qt.Key`
-    if key in MAP.keys():
-        return MAP[key]
-    return key.lower()
+    def run():
+        global win
+        if not win: win = MainWindow()
+        win.show()
+        win.raise_()
+        win.activateWindow()
 
-SHORTCUTS = []
+    open_ui = QAction("Open UI")
+    open_ui.triggered.connect(run)
+    tray_menu.addAction(open_ui)
 
-def update_shortcuts():
-    global SHORTCUTS
-    with open(os.path.join(get_config_dir(),"config.json")) as f:
-        SHORTCUTS = json.load(f)
-        log("SHORTCUTS => ",SHORTCUTS)
+    exit_act = QAction("Exit" if sys.platform != "darwin" else "Quit PyCuts")
+    exit_act.triggered.connect(close)
+    tray_menu.addAction(exit_act)
 
-update_shortcuts()
+    tray.setContextMenu(tray_menu)
+    tray.show()
+    
+    process = multiprocessing.Process(target=handler)
+    process.start()
 
-def on_press(key):
-    log(f"Pressed: {get_text_from_key(key)}")
-    if get_text_from_key(key) in pressed and pressed[get_text_from_key(key)]: return
-    pressed[get_text_from_key(key)] = True
-    for s in SHORTCUTS:
-        cut:str = s["Shortcut"]
-        keys = cut.split(" + ")
-        kt = get_text_from_key(key)
-        if map_from_qt_key(keys[-1]) != kt: continue
-        broken = False
-        for k in keys:
-            if not map_from_qt_key(k) in pressed or not pressed[map_from_qt_key(k)]:
-                broken = True
-                break
-        if broken: continue
-        try:
-            subprocess.call(s["Command"], shell=True)
-            # subprocess.call(s["Command"].split(" "))
-        except Exception as e:
-            log(f"Error executing shortcut: {e}")
-            
-
-def on_release(key):
-    log(f"Released: {get_text_from_key(key)}")
-    pressed[get_text_from_key(key)] = False
-
-keyboard_listener = None
-
-def kb_listen():
-    log("Verified listener thread")
-    keyboard_listener = keyboard.Listener(
-        on_press=on_press,
-        on_release=on_release)
-    log("Commencing listening...")
-    keyboard_listener.start()
-
-listener_thread = Thread(target=kb_listen)
-listener_thread.daemon = True
-listener_thread.start()
-log("Started listener_thread")
-
-app = QApplication(sys.argv)
-app.setQuitOnLastWindowClosed(False)
-
-tray = QSystemTrayIcon(QIcon(os.path.join(CDIR,"PyCutsTrayIcon.png" if sys.platform != "darwin" else "PyCutsTrayIconMono.png")),parent=app)
-tray.setToolTip("PyCuts")
-
-def close():
-    tray.hide()
-    QCoreApplication.quit()
-
-tray_menu = QMenu()
-
-win = None
-
-def run():
-    global win
-    if not win: win = MainWindow()
-    win.show()
-    win.raise_()
-    win.activateWindow()
-
-open_ui = QAction("Open UI")
-open_ui.triggered.connect(run)
-tray_menu.addAction(open_ui)
-
-exit_act = QAction("Exit" if sys.platform != "darwin" else "Quit PyCuts")
-exit_act.triggered.connect(close)
-tray_menu.addAction(exit_act)
-
-tray.setContextMenu(tray_menu)
-tray.show()
-
-app.exec()
-
-log("Exitting...")
-listener_thread.join()
-watch_thread.join()
+    app.exec()
+    log("Exitting...")
+    process.join()
