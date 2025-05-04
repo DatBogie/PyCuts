@@ -10,13 +10,13 @@ source "../.venv/bin/activate"
 
 # build
 pyinstaller ../main.py -n "PyCuts" --onefile --noconfirm \
---add-data "../PyCutsTrayIcon.png:./" \
---add-data "../PyCutsTrayIconMono.png:./"
+--add-data "../icons/PyCutsTrayIcon.png:./" \
+--add-data "../icons/PyCutsTrayIconMono.png:./"
 
 # build config
 pyinstaller ../ui.py -n "PyCuts Config" --onefile --noconfirm \
---add-data "../PyCutsTrayIcon.png:./" \
---add-data "../PyCutsTrayIconMono.png:./"
+--add-data "../icons/PyCutsTrayIcon.png:./" \
+--add-data "../icons/PyCutsTrayIconMono.png:./"
 
 # make .local/share folder
 mkdir -p ~/.local/share/PyCuts
@@ -24,7 +24,7 @@ mkdir -p ~/.local/share/PyCuts
 # copy files
 cp -f "./dist/PyCuts" ~/.local/share/PyCuts/pycuts
 cp -f "./dist/PyCuts Config" ~/.local/share/PyCuts/config
-cp -f "../PyCutsTrayIcon.png" ~/.local/share/PyCuts/icon.png
+cp -f "../icons/PyCutsTrayIcon.png" ~/.local/share/PyCuts/icon.png
 echo "Copied resources to ~/.local/share/PyCuts"
 
 # write .dekstop main

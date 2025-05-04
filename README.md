@@ -1,4 +1,4 @@
-# <img src="./PyCutsTrayIcon.png" height="20px"> PyCuts
+# <img src="./icons/PyCutsTrayIcon.png" height="20px"> PyCuts
 Global shortcuts service with GUI manager, written in Python.
 
 ---

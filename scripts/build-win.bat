@@ -9,14 +9,14 @@ IF NOT EXIST ..\\.venv\\Scripts\\activate.bat (
 call ..\\.venv\\Scripts\\activate.bat
 
 :: build
-pyinstaller ..\\main.py -n "PyCuts" -w --onefile -i ..\\PyCuts.ico --noconfirm ^
-    --add-data ..\\PyCutsTrayIcon.png;. ^
-    --add-data ..\\PyCutsTrayIconMono.png;.
+pyinstaller ..\\main.py -n "PyCuts" -w --onefile -i ..\\icons\\PyCuts.ico --noconfirm ^
+    --add-data ..\\icons\\PyCutsTrayIcon.png;. ^
+    --add-data ..\\icons\\PyCutsTrayIconMono.png;.
 
 :: build config
 pyinstaller ..\\ui.py -n "PyCuts Config" -w --onefile -i ..\\PyCuts.ico --noconfirm ^
-    --add-data ..\\PyCutsTrayIcon.png;. ^
-    --add-data ..\\PyCutsTrayIconMono.png;.
+    --add-data ..\\icons\\PyCutsTrayIcon.png;. ^
+    --add-data ..\\icons\\PyCutsTrayIconMono.png;.
 
 :: install / create shortcuts
 mkdir %LOCALAPPDATA%\\PyCuts

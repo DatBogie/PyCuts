@@ -10,13 +10,13 @@ source "../.venv/bin/activate"
 
 # build
 pyinstaller ../main.py -n "PyCuts" --onefile --noconfirm \
---add-data "../PyCutsTrayIcon.png:./" \
---add-data "../PyCutsTrayIconMono.png:./"
+--add-data "../icons/PyCutsTrayIcon.png:./" \
+--add-data "../icons/PyCutsTrayIconMono.png:./"
 
 # build config
-pyinstaller ../ui.py -n "PyCuts Config" -w -i "../PyCuts.icns" --noconfirm \
---add-data "../PyCutsTrayIcon.png:./" \
---add-data "../PyCutsTrayIconMono.png:./"
+pyinstaller ../ui.py -n "PyCuts Config" -w -i "../icons/PyCuts.icns" --noconfirm \
+--add-data "../icons/PyCutsTrayIcon.png:./" \
+--add-data "../icons/PyCutsTrayIconMono.png:./"
 
 rm -rf "./dist/PyCuts Config"
 

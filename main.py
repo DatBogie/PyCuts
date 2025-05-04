@@ -26,7 +26,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
 
-    tray = QSystemTrayIcon(QIcon(os.path.join(CDIR,"PyCutsTrayIcon.png" if sys.platform != "darwin" else "PyCutsTrayIconMono.png")),parent=app)
+    tray = QSystemTrayIcon(QIcon(os.path.join(CDIR,"icons","PyCutsTrayIcon.png" if sys.platform != "darwin" else "PyCutsTrayIconMono.png")),parent=app)
     tray.setToolTip("PyCuts")
 
     def close():
