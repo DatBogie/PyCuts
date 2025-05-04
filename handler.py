@@ -78,6 +78,7 @@ def handler():
             cut:str = s["Shortcut"]
             keys = cut.split(" + ")
             kt = get_text_from_key(key)
+            print([map_from_qt_key(x) for x in keys])
             if map_from_qt_key(keys[-1]) != kt: continue
             broken = False
             for k in keys:

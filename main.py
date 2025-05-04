@@ -19,7 +19,6 @@ log(f"CDIR={CDIR}")
 
 if __name__ == "__main__":
     multiprocessing.freeze_support()
-    
     if os.path.exists(os.path.join(CDIR,"__LOCK__")):
         os.remove(os.path.join(CDIR,"__LOCK__"))
     
