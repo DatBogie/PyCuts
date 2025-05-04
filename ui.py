@@ -172,10 +172,13 @@ class MainWindow(QMainWindow):
             item = self.help_list.item(i)
             item.setHidden(not (txt == "" or item.text().lower().find(txt.lower()) != -1))
 
+    def closeEvent(self, a0):
+        self.save_data()
+        return super().closeEvent(a0)
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = MainWindow()
     win.show()
     exit_code = app.exec()
-    win.save_data()
     sys.exit(exit_code)
