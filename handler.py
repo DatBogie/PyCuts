@@ -36,14 +36,28 @@ def handler():
     pressed = {}
 
     MAP = { # Qt => pynput
-        "Meta": "cmd",
-        "Control": "ctrl",
-        "CapsLock": "caps_lock"
+        "Meta": ["cmd",None],
+        "Control": [["ctrl","blacklist",["win32"]],["ctrl_l","whitelist",["win32"]]],
+        "Alt": ["alt_l","whitelist",["win32"]],
+        "CapsLock": ["caps_lock",None]
     }
 
     def map_from_qt_key(key:str): # `key` is `str` from `Qt.Key`
         if key in MAP.keys():
-            return MAP[key]
+            if type(MAP[key][0]) == str:
+                if MAP[key][1] == "blacklist":
+                    if sys.platform in MAP[key][2]: return key
+                elif MAP[key][1] == "whitelist":
+                    if not sys.platform in MAP[key][2]: return key
+                return MAP[key]
+            else:
+                for set in MAP[key]:
+                    if set[1] == "blacklist":
+                        if sys.platform in set[1]: continue
+                    elif set[1] == "whitelist":
+                        if not sys.platform in set[2]: continue
+                    return set[0]
+                return key
         return key.lower()
 
     SHORTCUTS = []

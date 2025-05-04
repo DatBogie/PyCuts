@@ -4,14 +4,19 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QKeyEvent
 
 MAP = {
-    "Control": "Meta",
-    "Meta": "Control"
+    "Control": ["Meta","whitelist",["darwin"]],
+    "Meta": ["Control","whitelist",["darwin"]]
 }
 
 def getTextFromQKeyEvent(x:QKeyEvent|Qt.Key):
     k = x.key() if type(x) == QKeyEvent else x
     key = "Tab" if k == Qt.Key.Key_Backtab else Qt.Key(k).name[4:]
-    if key in MAP.keys(): return MAP[key]
+    if key in MAP.keys():
+        if MAP[key][1] == "blacklist":
+            if sys.platform in MAP[key][2]: return key
+        elif MAP[key][1] == "whitelist":
+            if not sys.platform in MAP[key][2]: return key
+        return MAP[key][0]
     return key
 
 class btnIgnoreKeys(QPushButton):
