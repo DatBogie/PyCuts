@@ -9,9 +9,15 @@ CDIR = os.path.abspath("./") if not hasattr(sys,"_MEIPASS") else sys._MEIPASS
 
 def get_text_from_key(key):
     try:
-        return key.name
-    except:
-        return key.char
+        if hasattr(keyboard.Listener().canonical(key),"vk") and keyboard.Listener().canonical(key) != None:
+            return keyboard.Listener().canonical(key).vk
+        else:
+            return keyboard.Listener().canonical(key)
+    except Exception as e: raise Exception(f"Unable to find key name from {key}!\nReason: {e}")
+    # try:
+    #     return key.char
+    # except:
+    #     return key.name
 
 def get_config_dir():
     return os.path.join(os.path.expanduser("~"),".config","pycuts") if sys.platform != "win32" else os.path.join(os.path.expanduser("~"),"AppData","Local","PyCuts")

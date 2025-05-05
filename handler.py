@@ -71,6 +71,9 @@ def handler():
     update_shortcuts()
 
     def on_press(key):
+        try:
+            print(keyboard_listener.canonical(key))
+        except:pass
         log(f"Pressed: {get_text_from_key(key)}")
         if get_text_from_key(key) in pressed and pressed[get_text_from_key(key)]: return
         pressed[get_text_from_key(key)] = True

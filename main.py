@@ -2,7 +2,7 @@ import os, sys, multiprocessing
 from ui import mk_config_dir, get_config_dir, MainWindow
 from PyQt6.QtWidgets import QApplication, QSystemTrayIcon, QMenu
 from PyQt6.QtGui import QAction, QIcon
-from PyQt6.QtCore import QCoreApplication, QTimer
+from PyQt6.QtCore import QCoreApplication
 from handler import handler
 
 mk_config_dir()
