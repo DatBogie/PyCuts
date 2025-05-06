@@ -60,9 +60,10 @@ if __name__ == "__main__":
     process.start()
 
     app.exec()
-    process.terminate()
-    log("Exitting...")
+    log("Exitting main...")
     process.join()
     
     if os.path.exists(os.path.join(CDIR,"__LOCK__")):
         os.remove(os.path.join(CDIR,"__LOCK__"))
+    if os.path.exists(os.path.join(CDIR,"__BREAK__")):
+        os.remove(os.path.join(CDIR,"__BREAK__"))

@@ -23,7 +23,7 @@ def handler():
     else:
         with open(os.path.join(CDIR,"__LOCK__"),"w") as f:
                 f.write("")
-
+        
     class FileChangedHandler(FileSystemEventHandler):
         def __init__(self, path:str):
             super().__init__()
@@ -32,6 +32,14 @@ def handler():
         def on_modified(self, event):
             if event.src_path.endswith(self.path):
                 update_shortcuts()
+    
+    observer1 = None
+    class FileCreatedHandler(FileSystemEventHandler):
+        def on_created(self, event):
+            log("watchdog: file created")
+            if event.src_path.endswith("__BREAK__"):
+                log("watchdog: break...")
+                observer1.stop()
 
     pressed = {}
 
@@ -102,21 +110,21 @@ def handler():
     log("Commencing listening...")
     keyboard_listener.start()
 
-    handler = FileChangedHandler("config.json")
     observer = Observer()
-    observer.schedule(handler,get_config_dir(),recursive=False)
+    observer1 = Observer()
+    observer.schedule(FileChangedHandler("config.json"),get_config_dir(),recursive=False)
+    observer1.schedule(FileCreatedHandler(),CDIR,recursive=False)
     observer.start()
-    log("Watchdog started...")
+    observer1.start()
+    log("Watchdogs started...")
 
     if os.path.exists(os.path.join(CDIR,"__BREAK__")):
         os.remove(os.path.join(CDIR,"__BREAK__"))
+    
+    observer1.join()
 
-    while not os.path.exists(os.path.join(CDIR,"__BREAK__")):
-        pass
-
-    log("Exitting...")
+    log("Exitting handler...")
     
     os.remove(os.path.join(CDIR,"__BREAK__"))
 
-    observer.stop()
     keyboard_listener.stop()
