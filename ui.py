@@ -9,10 +9,13 @@ CDIR = os.path.abspath("./") if not hasattr(sys,"_MEIPASS") else sys._MEIPASS
 
 def get_text_from_key(key):
     try:
-        if hasattr(keyboard.Listener().canonical(key),"vk") and keyboard.Listener().canonical(key) != None:
-            return keyboard.Listener().canonical(key).vk
+        if hasattr(keyboard.Listener().canonical(key),"char") and str(keyboard.Listener().canonical(key).char) != "None":
+            return str(keyboard.Listener().canonical(key).char)
+        elif hasattr(key,"name"):
+            return key.name
         else:
-            return keyboard.Listener().canonical(key)
+            return str(key)
+            
     except Exception as e: raise Exception(f"Unable to find key name from {key}!\nReason: {e}")
     # try:
     #     return key.char

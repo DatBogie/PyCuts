@@ -71,9 +71,6 @@ def handler():
     update_shortcuts()
 
     def on_press(key):
-        try:
-            print(keyboard_listener.canonical(key))
-        except:pass
         log(f"Pressed: {get_text_from_key(key)}")
         if get_text_from_key(key) in pressed and pressed[get_text_from_key(key)]: return
         pressed[get_text_from_key(key)] = True
@@ -81,7 +78,6 @@ def handler():
             cut:str = s["Shortcut"]
             keys = cut.split(" + ")
             kt = get_text_from_key(key)
-            print([map_from_qt_key(x) for x in keys])
             if map_from_qt_key(keys[-1]) != kt: continue
             broken = False
             for k in keys:
@@ -91,8 +87,7 @@ def handler():
             if broken: continue
             try:
                 log("Executing:",s["Command"])
-                subprocess.call(s["Command"], shell=True)
-                # subprocess.call(s["Command"].split(" "))
+                subprocess.Popen(s["Command"], shell=True)
             except Exception as e:
                 log(f"Error executing shortcut: {e}")
 
