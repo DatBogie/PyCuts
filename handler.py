@@ -61,7 +61,7 @@ def handler():
             else:
                 for set in MAP[key]:
                     if set[1] == "blacklist":
-                        if sys.platform in set[1]: continue
+                        if sys.platform in set[2]: continue
                     elif set[1] == "whitelist":
                         if not sys.platform in set[2]: continue
                     return set[0]
