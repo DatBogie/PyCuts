@@ -1,5 +1,5 @@
 #!/bin/sh
-# To be place in the .zip release.
+# To be placed in the .zip release.
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 cd "$SCRIPT_DIR"
 
