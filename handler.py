@@ -79,7 +79,7 @@ def handler():
     update_shortcuts()
 
     def on_press(key):
-        log(f"Pressed: {get_text_from_key(key)}")
+        # log(f"Pressed: {get_text_from_key(key)}")
         if get_text_from_key(key) in pressed and pressed[get_text_from_key(key)]: return
         pressed[get_text_from_key(key)] = True
         for s in SHORTCUTS:
@@ -100,7 +100,7 @@ def handler():
                 log(f"Error executing shortcut: {e}")
 
     def on_release(key):
-        log(f"Released: {get_text_from_key(key)}")
+        # log(f"Released: {get_text_from_key(key)}")
         pressed[get_text_from_key(key)] = False
 
     log("Verified listener thread")
