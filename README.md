@@ -15,21 +15,24 @@ Every supported OS (Windows, Linux, macOS) will have a `.zip` file in each relea
 
 ## Windows
 1. Download and extract `PyCuts-win.zip` from the [latest release](https://github.com/DatBogie/PyCuts/releases/latest).
-2. Open `PyCuts.exe` to start the PyCuts listener service.
-3. Right click on the tray icon and select `Open GUI` to open the GUI manager, or simply open `PyCuts Config.exe`.
+2. Run `install-win.bat` to create Start Menu shortcuts and install the `.exe`s to `%LOCALAPPDATA%\PyCuts`.
+3. Open `PyCuts` to start the PyCuts listener service.
+4. Right click on the tray icon and select `Open GUI` to open the GUI manager, or simply open `PyCuts Config`.
 
 ## Linux
 1. Download and extract `PyCuts-lin.zip` from the [latest release](https://github.com/DatBogie/PyCuts/releases/latest).
-2. Open `PyCuts` to start the PyCuts listener service.
-3. Right click on the tray icon and select `Open GUI` to open the GUI manager, or simply open `PyCuts Config`.
+2. Run `install-lin.sh` to create `~/.local/share/applications` `.desktop` files and install the binaries to `~/.local/share/PyCuts`.
+3. Open `PyCuts` to start the PyCuts listener service.
+4. Right click on the tray icon and select `Open GUI` to open the GUI manager, or simply open `PyCuts Config`.
 
 ## macOS
 1. Download and extract `PyCuts-mac.zip` from the [latest release](https://github.com/DatBogie/PyCuts/releases/latest).
-2. Open `PyCuts` with Terminal. It may ask for or complain about not having certain permissions. Once it does, or you start seeing output, close the Terminal window.
-3. Open System Settings, go to `Privacy & Security > Accessibility`, and turn on the switch next to Terminal.
-4. In System Settings, go to `Privacy & Security > Input Monitoring`, and turn on the switch next to Terminal.
-5. Open `PyCuts` with Terminal to start the PyCuts listener service.
-6. Right click on the tray icon and select `Open GUI` to open the GUI manager, or simply open `PyCuts Config.app`.
+2. Run `install-mac.sh` to install `PyCuts Config.app` to `~/Applications`, and `PyCuts` to `/usr/local/bin`.
+3. Open Terminal (or any other terminal emulator) and run `pycuts`. It may ask for or complain about not having certain permissions. Once it does, or you start seeing output, close the terminal window.
+3. Open System Settings, go to `Privacy & Security > Accessibility`, and turn on the switch next to Terminal (or your terminal emulator app).
+4. In System Settings, go to `Privacy & Security > Input Monitoring`, and turn on the switch next to Terminal (or your terminal emulator app).
+5. Open Terminal (or any other terminal emulator) and run `pycuts` to start the PyCuts listener service.
+6. Right click on the tray icon and select `Open GUI` to open the GUI manager, or simply open `PyCuts Config` from Launchpad or Spotlight Search.
 
 ---
 
