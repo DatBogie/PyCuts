@@ -20,6 +20,7 @@ pyinstaller ../ui.py -n "PyCuts Config" -w -i "../icons/PyCuts.icns" --noconfirm
 
 rm -rf "./dist/PyCuts Config"
 
+cp -f "./dist/PyCuts" /usr/local/bin
 cp -f "./dist/PyCuts Config.app" ~/Applications
 
 echo "Built 'PyCuts' to PyCuts/scripts/dist/PyCuts"
