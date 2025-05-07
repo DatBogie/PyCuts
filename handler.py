@@ -57,7 +57,7 @@ def handler():
                     if sys.platform in MAP[key][2]: return key
                 elif MAP[key][1] == "whitelist":
                     if not sys.platform in MAP[key][2]: return key
-                return MAP[key]
+                return MAP[key][0]
             else:
                 for set in MAP[key]:
                     if set[1] == "blacklist":
@@ -89,7 +89,7 @@ def handler():
             if map_from_qt_key(keys[-1]) != kt: continue
             broken = False
             for k in keys:
-                if not map_from_qt_key(k) in pressed or not pressed[map_from_qt_key(k)]:
+                if not map_from_qt_key(k) in pressed.keys() or not pressed[map_from_qt_key(k)]:
                     broken = True
                     break
             if broken: continue
