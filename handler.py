@@ -6,23 +6,27 @@ def handler():
     from watchdog.events import FileSystemEventHandler
 
     mk_config_dir()
+    
+    CONFIG_DIR = get_config_dir()
 
     def log(*args):
-        print(" ".join([str(x) for x in list(args)]),"\n")
-        with open(os.path.join(get_config_dir(),"latest.log"),"a") as f:
-            f.write("\n")
+        with open(os.path.join(CONFIG_DIR,"latest.log"),"a") as f:
+            message = "\n"
             for x in list(args):
-                f.write(" "+str(x))
+                message+=" "+str(x)
+            print(message)
+            f.write(message)
 
     CDIR = os.path.abspath("./") if not hasattr(sys,"_MEIPASS") else sys._MEIPASS
     log(f"CDIR={CDIR}")
     
-    if os.path.exists(os.path.join(CDIR,"__LOCK__")):
+    LOCK_PATH = os.path.join(CDIR,"__LOCK__")
+    
+    if os.path.exists(LOCK_PATH):
         log("__LOCK__ present; quitting...")
         raise Exception
     else:
-        with open(os.path.join(CDIR,"__LOCK__"),"w") as f:
-                f.write("")
+        with open(LOCK_PATH,"w"):pass
         
     class FileChangedHandler(FileSystemEventHandler):
         def __init__(self, path:str):
@@ -51,28 +55,32 @@ def handler():
     }
 
     def map_from_qt_key(key:str): # `key` is `str` from `Qt.Key`
-        if key in MAP.keys():
-            if type(MAP[key][0]) == str:
-                if MAP[key][1] == "blacklist":
-                    if sys.platform in MAP[key][2]: return key
-                elif MAP[key][1] == "whitelist":
-                    if not sys.platform in MAP[key][2]: return key
-                return MAP[key][0]
-            else:
-                for set in MAP[key]:
-                    if set[1] == "blacklist":
-                        if sys.platform in set[2]: continue
-                    elif set[1] == "whitelist":
-                        if not sys.platform in set[2]: continue
-                    return set[0]
-                return key
-        return key.lower()
+        mapping = MAP.get(key)
+        if not mapping: return key.lower()
+        maps = mapping[0]
+        if type(maps) == str:
+            map_type = mapping[1]
+            if map_type == "blacklist":
+                if sys.platform in mapping[2]: return
+            elif map_type == "whitelist":
+                if not sys.platform in mapping[2]: return
+            return maps
+        else:
+            for set in mapping:
+                set_type = set[1]
+                if set_type == "blacklist":
+                    if sys.platform in set[2]: continue
+                elif set_type == "whitelist":
+                    if not sys.platform in set[2]: continue
+                return set[0]
+            return key
+
 
     SHORTCUTS = []
 
     def update_shortcuts():
         nonlocal SHORTCUTS
-        with open(os.path.join(get_config_dir(),"config.json")) as f:
+        with open(os.path.join(CONFIG_DIR,"config.json")) as f:
             SHORTCUTS = json.load(f)
             log("SHORTCUTS => ",SHORTCUTS)
 
@@ -81,7 +89,7 @@ def handler():
     def on_press(key):
         # log(f"Pressed: {get_text_from_key(key)}")
         key_name = get_text_from_key(key)
-        if key_name in pressed and pressed[key_name]: return
+        if pressed.get(key_name): return
         pressed[key_name] = True
         for s in SHORTCUTS:
             cut:str = s["Shortcut"]
@@ -114,19 +122,22 @@ def handler():
 
     observer = Observer()
     observer1 = Observer()
-    observer.schedule(FileChangedHandler("config.json"),get_config_dir(),recursive=False)
+    observer.schedule(FileChangedHandler("config.json"),CONFIG_DIR,recursive=False)
     observer1.schedule(FileCreatedHandler(),CDIR,recursive=False)
     observer.start()
     observer1.start()
     log("Watchdogs started...")
-
-    if os.path.exists(os.path.join(CDIR,"__BREAK__")):
-        os.remove(os.path.join(CDIR,"__BREAK__"))
     
-    observer1.join()
+    BREAK_PATH = os.path.join(CDIR,"__BREAK__")
 
-    log("Exitting handler...")
+    if os.path.exists(BREAK_PATH):
+        os.remove(BREAK_PATH)
     
-    os.remove(os.path.join(CDIR,"__BREAK__"))
+    try:
+        observer1.join()
+    finally:
+        log("Exitting handler...")
+        
+        os.remove(BREAK_PATH)
 
-    keyboard_listener.stop()
+        keyboard_listener.stop()
