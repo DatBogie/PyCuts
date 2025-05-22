@@ -80,16 +80,18 @@ def handler():
 
     def on_press(key):
         # log(f"Pressed: {get_text_from_key(key)}")
-        if get_text_from_key(key) in pressed and pressed[get_text_from_key(key)]: return
-        pressed[get_text_from_key(key)] = True
+        key_name = get_text_from_key(key)
+        if key_name in pressed and pressed[key_name]: return
+        pressed[key_name] = True
         for s in SHORTCUTS:
             cut:str = s["Shortcut"]
             keys = cut.split(" + ")
-            kt = get_text_from_key(key)
+            kt = key_name
             if map_from_qt_key(keys[-1]) != kt: continue
             broken = False
             for k in keys:
-                if not map_from_qt_key(k) in pressed.keys() or not pressed[map_from_qt_key(k)]:
+                mapped_key = map_from_qt_key(k)
+                if not mapped_key in pressed.keys() or not pressed[mapped_key]:
                     broken = True
                     break
             if broken: continue
