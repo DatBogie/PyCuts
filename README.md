@@ -1,4 +1,4 @@
-<h1 align="center"><img src="./icons/PyCutsLogoFull.png" height="35px"></h1>
+<h1 align="center"><img src="./icons/PyCutsLogoFull.png" height="45px"></h1>
 Global shortcuts service with GUI manager, written in Python.
 
 ---
