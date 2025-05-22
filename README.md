@@ -1,4 +1,4 @@
-# <img src="./icons/PyCutsTrayIcon.png" height="20px"> PyCuts
+<h1 align="center"><img src="./icons/PyCutsLogoFull.png" height="30px"></h1>
 Global shortcuts service with GUI manager, written in Python.
 
 ---
@@ -13,32 +13,44 @@ Every supported OS (Windows, Linux, macOS) will have a `.zip` file in each relea
 <br>`.exe` on Windows; no extension on Linux; `.app` on macOS.
 <br>The GUI configurator that allows easily managing global shortcuts.
 
-## Windows
-1. Download and extract `PyCuts-win.zip` from the [latest release](https://github.com/DatBogie/PyCuts/releases/latest).
-2. Run `install-win.bat` to create Start Menu shortcuts and install the `.exe`s to `%LOCALAPPDATA%\PyCuts`.
-3. Open `PyCuts` to start the PyCuts listener service.
-4. Right click on the tray icon and select `Open GUI` to open the GUI manager, or simply open `PyCuts Config`.
+<details>
+<summary><h3>Windows</h3></summary>
+<ol>
+	<li>Download and extract <code>PyCuts-win.zip</code> from the <a href="https://github.com/DatBogie/PyCuts/releases/latest">latest release</a>.</li>
+	<li>Run <code>install-win.bat</code> to create Start Menu shortcuts and install the <code>.exe</code>s to <code>%LOCALAPPDATA%\PyCuts</code>.</li>
+	<li>Open <code>PyCuts</code> to start the PyCuts listener service.</li>
+	<li>Right click on the tray icon and select <code>Open GUI</code> to open the GUI manager, or simply open <code>PyCuts Config</code>.</li>
+</ol>
+</details>
 
-## Linux
-1. Download and extract `PyCuts-lin.zip` from the [latest release](https://github.com/DatBogie/PyCuts/releases/latest).
-2. Run `install-lin.sh` to create `~/.local/share/applications` `.desktop` files and install the binaries to `~/.local/share/PyCuts`.
-3. Open `PyCuts` to start the PyCuts listener service.
-4. Right click on the tray icon and select `Open GUI` to open the GUI manager, or simply open `PyCuts Config`.
+<details>
+<summary><h3>Linux</h3></summary>
+<ol>
+	<li>Download and extract <code>PyCuts-lin.zip</code> from the <a href="https://github.com/DatBogie/PyCuts/releases/latest">latest release</a>.</li>
+	<li>Run <code>install-lin.sh</code> to create <code>~/.local/share/applications</code> <code>.desktop</code> files and install the binaries to <code>~/.local/share/PyCuts</code>.</li>
+	<li>Open <code>PyCuts</code> to start the PyCuts listener service.</li>
+	<li>Right click on the tray icon and select <code>Open GUI</code> to open the GUI manager, or simply open <code>PyCuts Config</code>.</li>
+</ol>
+</details>
 
-## macOS
-1. Download and extract `PyCuts-mac.zip` from the [latest release](https://github.com/DatBogie/PyCuts/releases/latest).
-2. Run `install-mac.sh` to install `PyCuts Config.app` to `~/Applications`, and `PyCuts` to `/usr/local/bin`.
-3. Open Terminal (or any other terminal emulator) and run `pycuts`. It may ask for or complain about not having certain permissions. Once it does, or you start seeing output, close the terminal window.
-3. Open System Settings, go to `Privacy & Security > Accessibility`, and turn on the switch next to Terminal (or your terminal emulator app).
-4. In System Settings, go to `Privacy & Security > Input Monitoring`, and turn on the switch next to Terminal (or your terminal emulator app).
-5. Open Terminal (or any other terminal emulator) and run `pycuts` to start the PyCuts listener service.
-6. Right click on the tray icon and select `Open GUI` to open the GUI manager, or simply open `PyCuts Config` from Launchpad or Spotlight Search.
+<details>
+<summary><h3>macOS</h3></summary>
+<ol>
+<li>Download and extract <code>PyCuts-mac.zip</code> from the <a href="https://github.com/DatBogie/PyCuts/releases/latest">latest release</a>.</li>
+<li>Run <code>install-mac.sh</code> to install <code>PyCuts Config.app</code> to <code>~/Applications</code>, and <code>PyCuts</code> to <code>/usr/local/bin</code>.</li>
+<li>Open Terminal (or any other terminal emulator) and run <code>pycuts</code>. It may ask for or complain about not having certain permissions. Once it does, or you start seeing output, close the terminal window.</li>
+<li>Open System Settings, go to <code>Privacy & Security > Accessibility</code>, and turn on the switch next to Terminal (or your terminal emulator app).</li>
+<li>In System Settings, go to <code>Privacy & Security > Input Monitoring</code>, and turn on the switch next to Terminal (or your terminal emulator app).</li>
+<li>Open Terminal (or any other terminal emulator) and run <code>pycuts</code> to start the PyCuts listener service.</li>
+<li>Right click on the tray icon and select <code>Open GUI</code> to open the GUI manager, or simply open <code>PyCuts Config</code> from Launchpad or Spotlight Search.</li>
+</ol>
+</details>
 
 ---
 
 # Building from Source
 > [!Important]
-> Python (`>=3.9`) must be installed, and it must be in PATH—running `python` (Windows) or `python3` must bring you into a Python shell.
+> Python (`>=3.9`) must be installed, and it must be in PATH; running `python` (Windows) or `python3` must bring you into a Python shell.
 
 1. Clone this repository by either:
 	<br>a) Cloning it with `git` in a terminal:
