@@ -2,3 +2,4 @@ PyQt6
 watchdog
 pynput
 pyinstaller
+psutil

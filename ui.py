@@ -1,4 +1,4 @@
-import sys, os, json, time
+import sys, os, json, time, psutil, subprocess
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QInputDialog, QTableWidget, QTableWidgetItem, QMessageBox, QListWidget, QLineEdit
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
@@ -95,18 +95,25 @@ class MainWindow(QMainWindow):
         helpbtn = QPushButton("?")
         helpbtn.setToolTip("See list of all valid keys")
         helpbtn.setFixedSize(25,25)
+        restartbtn = QPushButton("↻")
+        restartbtn.setToolTip("Restart PyCuts process")
+        restartbtn.setFixedSize(25,25)
+            
         
         new.clicked.connect(self.new)
         edit.clicked.connect(self.edit_current_shortcut)
         delete.clicked.connect(self.del_row)
         save.clicked.connect(self.save_data)
         helpbtn.clicked.connect(self.show_help)
+        restartbtn.clicked.connect(self.restart_p)
         
         btn_lay.addWidget(new)
         btn_lay.addWidget(edit)
         btn_lay.addWidget(delete)
         btn_lay.addWidget(save)
         btn_lay.addWidget(helpbtn)
+        btn_lay.addSpacing(20)
+        btn_lay.addWidget(restartbtn)
         
         self.ls.setColumnCount(3)
         
@@ -195,6 +202,24 @@ class MainWindow(QMainWindow):
     def closeEvent(self, a0):
         self.save_data()
         return super().closeEvent(a0)
+    
+    def restart_p(self):
+        def err(x):
+            QMessageBox.critical(self,"Restart PyCuts - PyCuts",str(x),QMessageBox.StandardButton.Ok)
+        # Kill processes
+        for p in psutil.process_iter():
+            if (sys.platform == "win32" and p.name() == "PyCuts.exe") or (p.name() == "pycuts"):
+                try:
+                    p.kill()
+                except Exception as e: err(e)
+        # Start process
+        try:
+            if sys.platform == "win32":
+                subprocess.Popen(os.path.join(get_config_dir(),"PyCuts.exe"))
+            else:
+                subprocess.Popen(os.path.join(get_config_dir(),"pycuts"))
+        except Exception as e: err(e)
+        
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
