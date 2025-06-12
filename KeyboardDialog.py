@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QSizePolicy
+from PyQt6.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QDialogButtonBox
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QKeyEvent
 
@@ -41,26 +41,33 @@ class KeyboardDialog(QDialog):
         main_lay.addWidget(self.label)
         main_lay.addWidget(self.btn)
 
-        cancel = QPushButton("Cancel")
-        ok = QPushButton("OK")
+        # cancel = QPushButton("Cancel")
+        # ok = QPushButton("OK")
         
-        cancel.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        ok.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-
-        cancel.clicked.connect(self.reject)
-        ok.clicked.connect(self.accept)
-
-        btn_lay = QHBoxLayout()
-        btn_lay.addStretch()
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok|QDialogButtonBox.StandardButton.Cancel)
+        buttons.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         
-        if sys.platform == "darwin":
-            btn_lay.addWidget(cancel)
-            btn_lay.addWidget(ok)
-        else:
-            btn_lay.addWidget(ok)
-            btn_lay.addWidget(cancel)
+        # cancel.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        # ok.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
-        main_lay.addLayout(btn_lay)
+        # cancel.clicked.connect(self.reject)
+        # ok.clicked.connect(self.accept)
+        
+        buttons.rejected.connect(self.reject)
+        buttons.accepted.connect(self.accept)
+
+        # btn_lay = QHBoxLayout()
+        # btn_lay.addStretch()
+        
+        # if sys.platform == "darwin":
+        #     btn_lay.addWidget(cancel)
+        #     btn_lay.addWidget(ok)
+        # else:
+        #     btn_lay.addWidget(ok)
+        #     btn_lay.addWidget(cancel)
+
+        # main_lay.addLayout(btn_lay)
+        main_lay.addWidget(buttons)
 
         self.setLayout(main_lay)
         self.installEventFilter(self)
@@ -68,7 +75,7 @@ class KeyboardDialog(QDialog):
     class DialogMode():
         SINGLE_KEY = 0
         SHORTCUT = 1
-
+    
     def keyPressEvent(self, a0):
         if not self.awaitingInput: return super().keyPressEvent(a0)
         if self.mode == 0:
@@ -122,7 +129,7 @@ class KeyboardDialog(QDialog):
         return dia.data, result == QDialog.DialogCode.Accepted
     @staticmethod
     def getShortcut(parent:QWidget=None,title:str="",label:str="") -> tuple[dict[str,QKeyEvent], bool]:
-        dia = KeyboardDialog(mode=KeyboardDialog.DialogMode.SHORTCUT)
+        dia = KeyboardDialog(parent,mode=KeyboardDialog.DialogMode.SHORTCUT)
         dia.setWindowTitle(title)
         dia.label.setText(label)
         result = dia.exec()

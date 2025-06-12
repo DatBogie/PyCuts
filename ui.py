@@ -1,4 +1,4 @@
-import sys, os, json, time, psutil, subprocess
+import sys, os, json, time, psutil
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QInputDialog, QTableWidget, QTableWidgetItem, QMessageBox, QListWidget, QLineEdit
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
@@ -80,44 +80,53 @@ class MainWindow(QMainWindow):
         main_lay.addLayout(btn_lay)
         btn_lay.setAlignment(Qt.AlignmentFlag.AlignLeft)
         
-        new = QPushButton("+")
+        new = QPushButton(QIcon.fromTheme(QIcon.ThemeIcon.ListAdd),"")
         new.setToolTip("Register new global shortcut")
         new.setFixedSize(25,25)
-        edit = QPushButton("🖉")
+        edit = QPushButton(QIcon.fromTheme(QIcon.ThemeIcon.InputKeyboard),"")
         edit.setToolTip("Edit selected global shortcut")
         edit.setFixedSize(25,25)
-        delete = QPushButton("—")
+        delete = QPushButton(QIcon.fromTheme(QIcon.ThemeIcon.ListRemove),"")
         delete.setToolTip("Delete selected global shortcut")
         delete.setFixedSize(25,25)
-        save = QPushButton("🖪")
+        save = QPushButton(QIcon.fromTheme(QIcon.ThemeIcon.DocumentSave),"")
         save.setToolTip(f"Save all shortcuts to {os.path.join(get_config_dir(),"config.json")}")
         save.setFixedSize(25,25)
-        helpbtn = QPushButton("?")
+        helpbtn = QPushButton(QIcon.fromTheme(QIcon.ThemeIcon.DialogQuestion),"")
         helpbtn.setToolTip("See list of all valid keys")
         helpbtn.setFixedSize(25,25)
-        restartbtn = QPushButton("↻")
+        killbtn = QPushButton(QIcon.fromTheme(QIcon.ThemeIcon.ProcessStop),"")
+        killbtn.setToolTip("Kill PyCuts process")
+        killbtn.setFixedSize(25,25)
+        killbtn.setFocusPolicy(Qt.FocusPolicy.TabFocus)
+        restartbtn = QPushButton(QIcon.fromTheme(QIcon.ThemeIcon.ViewRefresh),"")
         restartbtn.setToolTip("Restart PyCuts process")
         restartbtn.setFixedSize(25,25)
-            
         
         new.clicked.connect(self.new)
         edit.clicked.connect(self.edit_current_shortcut)
         delete.clicked.connect(self.del_row)
         save.clicked.connect(self.save_data)
         helpbtn.clicked.connect(self.show_help)
+        killbtn.clicked.connect(self.kill_p)
         restartbtn.clicked.connect(self.restart_p)
+        
+        right_layout = QHBoxLayout()
+        right_layout.setAlignment(Qt.AlignmentFlag.AlignRight)
+        right_layout.addWidget(restartbtn)
+        right_layout.addWidget(killbtn)
         
         btn_lay.addWidget(new)
         btn_lay.addWidget(edit)
         btn_lay.addWidget(delete)
         btn_lay.addWidget(save)
         btn_lay.addWidget(helpbtn)
-        btn_lay.addSpacing(20)
-        btn_lay.addWidget(restartbtn)
+        btn_lay.addLayout(right_layout,10)
         
         self.ls.setColumnCount(3)
         
         self.help_menu = QWidget()
+        self.help_menu.setWindowFlags(Qt.WindowType.Tool)
         self.help_menu.setWindowTitle("Keys - PyCuts")
         self.help_menu.setFixedSize(278,245)
         
@@ -203,22 +212,36 @@ class MainWindow(QMainWindow):
         self.save_data()
         return super().closeEvent(a0)
     
-    def restart_p(self):
+    def kill_p(self):
+        s = True
         def err(x):
+            nonlocal s; s = False
             QMessageBox.critical(self,"Restart PyCuts - PyCuts",str(x),QMessageBox.StandardButton.Ok)
-        # Kill processes
         for p in psutil.process_iter():
-            if (sys.platform == "win32" and p.name() == "PyCuts.exe") or (p.name() == "pycuts"):
+            if (sys.platform == "win32" and p.name() == "PyCuts.exe") or (sys.platform == "darwin" and p.name() == "PyCuts") or (p.name() == "pycuts"):
                 try:
                     p.kill()
                 except Exception as e: err(e)
+        return s
+    
+    def restart_p(self):
+        s = True
+        def err(x):
+            nonlocal s; s = False
+            QMessageBox.critical(self,"Restart PyCuts - PyCuts",str(x),QMessageBox.StandardButton.Ok)
+        # Kill processes
+        s = self.kill_p()
         # Start process
-        try:
-            if sys.platform == "win32":
-                subprocess.Popen(os.path.join(get_config_dir(),"PyCuts.exe"))
-            else:
-                subprocess.Popen(os.path.join(get_config_dir(),"pycuts"))
-        except Exception as e: err(e)
+        # try:
+        #     if sys.platform == "win32":
+        #         subprocess.POpen(os.path.join(get_config_dir(),"PyCuts.exe"))
+        #     elif sys.platform == "darwin":
+        #         os.system("cd /usr/local/bin/ && ./pycuts")
+        #     else:
+        #         subprocess.POpen(os.path.join(get_config_dir(),"pycuts"))
+        # except Exception as e: err(e)
+        # if s:
+        #     QMessageBox.information(self,"Restart PyCuts - PyCuts","Successfully restarted PyCuts.",QMessageBox.StandardButton.Ok)
         
 
 if __name__ == "__main__":
