@@ -25,6 +25,9 @@ def get_text_from_key(key):
 def get_config_dir():
     return os.path.join(os.path.expanduser("~"),".config","pycuts") if sys.platform != "win32" else os.path.join(os.path.expanduser("~"),"AppData","Local","PyCuts")
 
+def get_local_dir():
+    return os.path.join(os.path.expanduser("~"),".local","share","PyCuts") if sys.platform != "win32" else get_config_dir()
+
 LOAD_DATA = None
 if os.path.exists(get_config_dir()) and os.path.exists(os.path.join(get_config_dir(),"config.json")):
     with open(os.path.join(get_config_dir(),"config.json"),"r") as f:
